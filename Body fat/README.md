@@ -22,7 +22,7 @@ This regression model aims to predict body fat percentage based on various predi
 Overall, this regression model provides valuable insights into the relationship between predictor variables and body fat percentage. However, caution should be exercised in interpreting the coefficients and model statistics, particularly in the presence of multicollinearity and non-normality of residuals.
 
 ##
-![image](body.png)
+Body fat/body.png
 
 # Interpretation:
 
