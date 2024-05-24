@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/media/yasin/Data Science_Ml_Dl_Nlp_AI/DATALENT/Employee_analysis_report/Employee analysis report/employees.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser query pragmas" current="2"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1372"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,9:mainemployees"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="employees" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="6" mode="1"/></sort><column_widths><column index="1" value="96"/><column index="2" value="85"/><column index="3" value="85"/><column index="4" value="237"/><column index="5" value="114"/><column index="6" value="110"/><column index="7" value="47"/><column index="8" value="50"/><column index="9" value="90"/><column index="10" value="111"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="jobs" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="3" mode="0"/></sort><column_widths><column index="1" value="47"/><column index="2" value="227"/><column index="3" value="84"/><column index="4" value="87"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">-- 
+-- 1.a) Minimum and Maximum Salary
+
+SELECT 
+    employee_id, first_name, last_name, salary
+FROM 
+    employees
+WHERE 
+    salary = (SELECT MIN(salary) FROM employees)
+   OR
+    salary = (SELECT MAX(salary) FROM employees);
+
+	
+-- b) Maximum and Minimum Salary by Job Title
+
+SELECT 
+    job_title, MAX(max_salary) AS max_salary, MIN(min_salary) AS min_salary
+FROM 
+    jobs;
+
+	
+-- c) Average Salary by Job Positions
+SELECT 
+    j.job_title, AVG(e.salary) AS average_salary
+FROM 
+    employees e
+JOIN 
+    jobs j ON e.job_id = j.job_id
+GROUP BY 
+    j.job_title;
+
+
+-- To calculate the years of service, we will calculate the years according to the employees' recruitment dates
+SELECT 
+    employee_id, 
+    first_name, 
+    last_name, 
+    hire_date, 
+    (CAST(strftime('%Y', 'now') AS INTEGER) - CAST(strftime('%Y', hire_date) AS INTEGER)) - 
+    (CASE WHEN strftime('%m-%d', 'now') &lt; strftime('%m-%d', hire_date) THEN 1 ELSE 0 END) AS years_of_service
+FROM 
+    employees;
+
+
+-- To filter employees with 20 years of service or more, we will add WHERE condition using the above query
+SELECT 
+    employee_id, 
+    first_name, 
+    last_name, 
+    hire_date, 
+    STRFTIME('%Y', 'now') - STRFTIME('%Y', hire_date) - 
+    (CASE WHEN STRFTIME('%m-%d', 'now') &lt; STRFTIME('%m-%d', hire_date) THEN 1 ELSE 0 END) AS years_of_service
+FROM 
+    employees
+WHERE 
+    hire_date &lt;= DATE('now', '-20 years');
+
+
+
+
+-- combine employees and jobs tables and calculate average salary by job titles
+SELECT 
+    j.job_title, 
+    AVG(e.salary) AS average_salary
+FROM 
+    employees e
+JOIN 
+    jobs j ON e.job_id = j.job_id
+GROUP BY 
+    j.job_title;
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
